@@ -1,15 +1,20 @@
 // * https://developer.chrome.com/docs/extensions/reference/cookies/#method-getAll
 // * https://developer.chrome.com/docs/extensions/reference/storage/#property-local
 
-// todo: cookie data isn't saving for some reason? "failed to parse cookie named idToken"
-
 const storage = chrome.storage.session;
 const form = document.getElementById('control-row');
-const input = document.getElementById('input');
 const message = document.getElementById('message');
-let domainName;
-// todo: can we make this more universal? A checkbox or input field or something?
 const tokenNames = ['idToken', 'refreshToken', 'accessToken'];
+let domainName;
+let url;
+
+const copyButton = document
+  .getElementById('copyButton')
+  .addEventListener('click', copy);
+
+const pasteButton = document
+  .getElementById('pasteButton')
+  .addEventListener('click', paste);
 
 // The async IIFE is necessary because Chrome <89 does not support top level await.
 (async function initPopupWindow() {
@@ -17,61 +22,29 @@ const tokenNames = ['idToken', 'refreshToken', 'accessToken'];
 
   if (tab?.url) {
     try {
-      let url = new URL(tab.url);
-      domainName = url.hostname.replace(/devapp\./g, '');
-      input.value = 'http://localhost:5173';
+      url = new URL(tab.url);
+      domainName = url.host
+        .replace(/devapp\./g, '')
+        .replace(`:${url.port}`, '');
     } catch {
       // ignore
     }
   }
-
-  input.focus();
 })();
 
-const getTokenCookies = (cookies) => {
-  return cookies.filter((cookie) => {
-    let isToken = false;
-    for (let name of tokenNames) {
-      if (name === cookie.name) isToken = true;
-    }
-    return isToken;
-  });
-};
-
-// Handle copy button action
-const copy = async (event) => {
+async function copy(event) {
   event.preventDefault();
   clearMessage();
   const message = await copyDomainCookies(domainName);
   setMessage(message);
-};
+}
 
-const copyButton = document
-  .getElementById('copyButton')
-  .addEventListener('click', copy);
-
-// Handle paste button action
-const paste = async (event) => {
+async function paste(event) {
   event.preventDefault();
   clearMessage();
-
-  // const nonDevHostname = domainName.replace(/devapp./g, '');
-  // const message = await pasteDomainCookies(nonDevHostname);
-
-  // storage.get(['cookies']).then((result) => {
-  //   console.log('Got cookie: ', result);
-  // todo: this will have to change since we're in an extension environment
-  // const cookie = result;
-  // cookie.split('; ').forEach((c) => (document.cookie = c));
-  // });
-
   const message = await pasteStorageCookies('cookies');
   setMessage(message);
-};
-
-const pasteButton = document
-  .getElementById('pasteButton')
-  .addEventListener('click', paste);
+}
 
 const copyDomainCookies = async (domain) => {
   let cookiesAdded = 0;
@@ -90,12 +63,12 @@ const copyDomainCookies = async (domain) => {
     return `Unexpected error: ${error.message}`;
   }
 
-  return `Copied ${cookiesAdded} cookies`;
+  return `Copied ${cookiesAdded} ${pluralizeCookie(cookiesAdded)}`;
 };
 
 const pasteStorageCookies = async (name) => {
   try {
-    const cookies = await storage.get(['cookies']);
+    const cookies = await storage.get([name]);
     const message = await pasteCookies(cookies);
     return message;
   } catch (error) {
@@ -115,6 +88,7 @@ const pasteCookies = async (cookies) => {
     await Promise.all(pending);
 
     cookiesSet = pending.length;
+    await chrome.tabs.reload();
   } catch (error) {
     return `Unexpected error: ${error.message}`;
   }
@@ -127,18 +101,29 @@ const pasteCookie = (cookie) => {
   delete cookie.hostOnly;
   delete cookie.session;
 
-  // configure the url
-  // const protocol = cookie.secure ? 'https:' : 'http:';
-  // const domain = cookie.domain.startsWith('.')
-  //   ? cookie.domain.slice(1)
-  //   : cookie.domain;
-  // const cookieUrl = `${protocol}//${domain}${cookie.path}`;
-
   return chrome.cookies.set({
     ...cookie,
-    url: input.value,
+    domain: domainName,
+    url: `${url.protocol}//${domainName}`,
   });
 };
+
+// Hoisted Utilities
+
+function pluralizeCookie(count) {
+  if (count === 1) return 'cookie';
+  return 'cookies';
+}
+
+function getTokenCookies(cookies) {
+  return cookies.filter((cookie) => {
+    let isToken = false;
+    for (let name of tokenNames) {
+      if (name === cookie.name) isToken = true;
+    }
+    return isToken;
+  });
+}
 
 function setMessage(str) {
   message.textContent = str;

@@ -6,12 +6,15 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="body">
-    <button id="copyButton">Copy</button>
-    <br /><br />
-    <input type="text" id="input" />
-    <button id="pasteButton">Paste</button>
+    <!-- <label for="url">URL</label>
+    <input type="text" id="url" /> -->
 
-    <p id="message" hidden></p>
+    <div class="button-group">
+      <button id="copyButton" class="button">Copy</button>
+      <button id="pasteButton" class="button">Paste</button>
+    </div>
+
+    <p id="message" class="message" hidden></p>
     <script src="popup.js"></script>
   </body>
 </html>

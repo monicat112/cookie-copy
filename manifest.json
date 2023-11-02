@@ -6,12 +6,19 @@
     "author": "Monica Macomber",
     "action":{
         "default_popup": "index.html",
-        "default_title": "Cookie Copy",
-        "default_icon": "cookie.png"
+        "default_title": "Cookie Copy"
+
     },
     "host_permissions": ["<all_urls>"],
     "permissions": [
       "storage",
-       "cookies"
-    ]
+       "cookies",
+       "tabs"
+    ],
+     "icons": {
+        "16": "images/icon-16.png",
+        "32": "images/icon-32.png",
+        "48": "images/icon-48.png",
+        "128": "images/icon-128.png"
+    }
 }

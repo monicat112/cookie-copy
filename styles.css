@@ -1,4 +1,39 @@
-.body {
-  min-width: 200px;
-  min-height: 200px;
+body {
+  margin: 2em;
+}
+
+.button-group {
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  text-align: center;
+  display: flex;
+  gap: 2em;
+}
+
+button {
+  background: none;
+  border: 2px solid;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.7em 1.5em;
+}
+
+.button {
+  color: #7b2dac;
+  transition: 0.25s;
+
+  &:hover,
+  &:focus {
+    border-color: #9b59c4;
+    /* border-color: #a972cb; */
+    color: #fff;
+    box-shadow: inset 0 0 0 2em #9b59c4;
+    cursor: pointer;
+  }
+}
+
+.message {
+  font-size: 1rem;
 }
