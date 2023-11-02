@@ -23,6 +23,7 @@ const pasteButton = document
   if (tab?.url) {
     try {
       url = new URL(tab.url);
+      // cleanup the host name
       domainName = url.host
         .replace(/devapp\./g, '')
         .replace(`:${url.port}`, '');
@@ -47,7 +48,7 @@ async function paste(event) {
 }
 
 const copyDomainCookies = async (domain) => {
-  let cookiesAdded = 0;
+  let cookieCount = 0;
 
   try {
     const cookies = await chrome.cookies.getAll({ domain });
@@ -58,12 +59,12 @@ const copyDomainCookies = async (domain) => {
 
     const tokenCookies = getTokenCookies(cookies);
     await storage.set({ cookies: tokenCookies });
-    cookiesAdded = tokenCookies.length;
+    cookieCount = tokenCookies.length;
   } catch (error) {
     return `Unexpected error: ${error.message}`;
   }
 
-  return `Copied ${cookiesAdded} ${pluralizeCookie(cookiesAdded)}`;
+  return `Copied ${cookieCount} ${pluralizeCookie(cookieCount)}`;
 };
 
 const pasteStorageCookies = async (name) => {
@@ -77,7 +78,7 @@ const pasteStorageCookies = async (name) => {
 };
 
 const pasteCookies = async (cookies) => {
-  let cookiesSet = 0;
+  let cookieCount = 0;
 
   try {
     if (cookies.length === 0) {
@@ -87,13 +88,13 @@ const pasteCookies = async (cookies) => {
     let pending = cookies.cookies.map(pasteCookie);
     await Promise.all(pending);
 
-    cookiesSet = pending.length;
+    cookieCount = pending.length;
     await chrome.tabs.reload();
   } catch (error) {
     return `Unexpected error: ${error.message}`;
   }
 
-  return `Set ${cookiesSet} cookie(s)`;
+  return `Set ${cookieCount} ${pluralizeCookie(cookieCount)}`;
 };
 
 const pasteCookie = (cookie) => {
