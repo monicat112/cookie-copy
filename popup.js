@@ -2,7 +2,6 @@
 // * https://developer.chrome.com/docs/extensions/reference/storage/#property-local
 
 const storage = chrome.storage.session;
-const form = document.getElementById('control-row');
 const message = document.getElementById('message');
 const tokenNames = ['idToken', 'refreshToken', 'accessToken'];
 let domainName;

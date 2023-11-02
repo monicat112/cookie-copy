@@ -1,12 +1,12 @@
 {
     "name": "Cookie Copy",
     "version": "1.0.0",
-    "description": "Copy paste cookies between web pages",
+    "description": "Copy paste specific cookies between web pages",
     "manifest_version": 3,
     "author": "Monica Macomber",
     "action":{
         "default_popup": "index.html",
-        "default_title": "Cookie Copy"
+        "default_title": "Cookie Copy SD"
 
     },
     "host_permissions": ["<all_urls>"],
