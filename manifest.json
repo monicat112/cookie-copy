@@ -1,7 +1,7 @@
 {
     "name": "Cookie Copy SD",
     "version": "1.0.0",
-    "description": "Copy paste specific cookies between web pages",
+    "description": "Chrome extension to copy specific cookies from your current tab and paste them onto another tab",
     "manifest_version": 3,
     "author": "Monica Macomber",
     "action":{
